@@ -16,6 +16,14 @@ labels=""
 
 echo "" > node-config.yaml; {echo -e "kubearmorOperator:\n  nodeSelector:"; echo "$labels" | tr ',' '\n' | while IFS=':' read label value; do echo "    $label: $value"; done} >> node-config.yaml;{echo -e "kubearmorConfig:\n  globalNodeSelector:"; echo "$labels" | tr ',' '\n' | while IFS=':' read label value; do echo "    $label: $value"; done} >> node-config.yaml
 ```
+Update the variable `env` with the key-value pair of environment variables and run the script.
+
+```bash
+#env="env1:val,env2:val"
+env=""
+
+echo "" > env-config.yaml; {echo -e "kubearmorOperator:\n  env:"; echo "$env" | tr ',' '\n' | while IFS=':' read name value; do echo "  - name: $name"; echo "    value: $value"; done} >> env-config.yaml; {echo -e "kubearmorConfig:\n  globalEnv:"; echo "$env" | tr ',' '\n' | while IFS=':' read name value; do echo "  - name: $name"; echo "    value: $value"; done} >> env-config.yaml
+```
 
 ## 2. Install latest kubearmor-operator using helm chart
 
@@ -25,5 +33,5 @@ Once your configuration file is ready, use the Helm chart to install KubeArmor O
 helm upgrade --install kubearmor-operator \
     --version v1.6.3 oci://public.ecr.aws/k9v9d5v2/runtime-security/kubearmor-operator \
     -n kubearmor --create-namespace --set kubearmorOperator.image.tag=latest \
-    --set autoDeploy=true -f node-config.yaml
+    --set autoDeploy=true -f node-config.yaml -f env-config.yaml
 ```
